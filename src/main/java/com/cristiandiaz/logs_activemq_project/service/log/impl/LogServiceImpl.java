@@ -1,5 +1,8 @@
 package com.cristiandiaz.logs_activemq_project.service.log.impl;
 
+import static com.cristiandiaz.logs_activemq_project.utils.LogConstants.OBJECT_TO_STRING_ERROR_LOG;
+import static org.apache.logging.log4j.util.Strings.EMPTY;
+
 import com.cristiandiaz.logs_activemq_project.dto.QueueMessageDTO;
 import com.cristiandiaz.logs_activemq_project.service.jms.producer.JmsProducerService;
 import com.cristiandiaz.logs_activemq_project.service.log.LogService;
@@ -20,14 +23,23 @@ public class LogServiceImpl implements LogService {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void sendLog(QueueMessageDTO queueMessage) {
-        String queueMessageStr = Strings.EMPTY;
+    public void sendLog(QueueMessageDTO queueMessage) throws Exception {
+        String message = convertMessageToString(queueMessage);
+        sendMessageToQueue(message);
+    }
+
+    private String convertMessageToString(QueueMessageDTO queueMessage) {
+        String queueMessageStr = EMPTY;
         try {
             queueMessageStr = objectMapper.writeValueAsString(queueMessage);
         } catch (JsonProcessingException e) {
-            log.error("Error convirtiendo objeto a String");
+            log.error(OBJECT_TO_STRING_ERROR_LOG);
         }
-        Stream.of(queueMessageStr)
+        return queueMessageStr;
+    }
+
+    private void sendMessageToQueue(String message) {
+        Stream.of(message)
                 .filter(Strings::isNotBlank)
                 .forEach(jmsProducerService::sendMessage);
     }
