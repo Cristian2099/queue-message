@@ -8,5 +8,5 @@ public interface LogService {
      *
      * @param message required to send message log in queue
      */
-    void sendLog(QueueMessageDTO message);
+    void sendLog(QueueMessageDTO message) throws Exception;
 }

@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: logs-activemq-project
+  activemq:
+    broker-url: ${active_mq_broker_url}
+    user: ${active_mq_user}
+    password: ${active_mq_password}
+
+jms:
+  queue:
+    destination: ${active_mq_queue_name}
